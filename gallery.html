@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARGIELA</title>
+    <link rel="stylesheet" href="gallery.css">
+    <link rel="stylesheet" href="https://use.typekit.net/tyg0iyw.css">
+</head>
+<header></header>
+<body>
+</div>
+<div class="headerbox">
+    <div class="headerleft">
+      <p>MAISON MARGIELA</p>
+    </div>
+  </div>
+    <main>
+        <section class="mainpage" id="section1">
+            <div class="imgrow"> 
+              <img src="MARGIELAIMAGES/IMG_4285.png" alt="">
+              <img src="MARGIELAIMAGES/IMG_4283.png" alt="">
+              <img src="MARGIELAIMAGES/IMG_4284.png" alt="">
+              <img src="MARGIELAIMAGES/518721034_18521455534028744_1535148583928797227_n.jpg" alt="">
+              <img src="MARGIELAIMAGES/518894259_18521455522028744_7754124909529080567_n.jpg" alt="">              
+              <img src="MARGIELAIMAGES/IMG_4282.png" alt="">
+              <img src="MARGIELAIMAGES/LOOK_05_D2_1080x1350.jpg" alt="">
+            </div>
+        </section>
+
+
+    </main>
+    <footer>
+        <div class="footerbox">
+            <div class="textleft">
+                <p>Haute couture<br>
+                    Automne/Hiver 2025-2026</p>
+            </div>
+            <div class="textright">                
+                <p class="index"><a class="details" href="gallery.html">DETAILS</a></p>
+                <p class="Format"><a href="index.html" class="maison">Maison</a></p>
+            </div>
+        </div>
+    </footer>
+    <div class="rideaublancpage2"></div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.39/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// --- Sélection du rideau et du bouton “Maison” ---
+const rideau = document.querySelector('.rideaublancpage2');
+const maisonButton = document.querySelector('.maison');
+
+// --- Initialisation du rideau (caché en haut) ---
+gsap.set(rideau, { y: "-100%", display: "block" });
+
+// --- Si on arrive depuis une transition précédente ---
+const playReverse = sessionStorage.getItem("playRideauReverse");
+
+if (playReverse === "true") {
+  gsap.fromTo(
+    rideau,
+    { y: "0%" }, // le rideau couvre la page
+    { 
+      y: "-100%", // il remonte pour révéler la page
+      duration: 0.7,
+      ease: "expo.inOut",
+      onComplete: () => {
+        sessionStorage.removeItem("playRideauReverse");
+      }
+    }
+  );
+}
+
+// --- Animation quand on clique sur le bouton “Maison” ---
+if (maisonButton) {
+  maisonButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    sessionStorage.setItem("playRideauReverse", "true");
+    gsap.to(rideau, {
+      y: "0%", // descend depuis le haut
+      duration: 0.7,
+      ease: "expo.inOut",
+      onComplete: () => {
+        window.location.href = maisonButton.href;
+      }
+    });
+  });
+}
+
+// --- LENIS (scroll fluide) ---
+const lenis = new Lenis({
+  duration: 0.9,
+  easing: (t) => 1 - Math.pow(1 - t, 2),
+  smoothWheel: true,
+  smoothTouch: false,
+});
+
+lenis.on('scroll', ScrollTrigger.update);
+
+function raf(time) {
+  lenis.raf(time);
+  requestAnimationFrame(raf);
+}
+requestAnimationFrame(raf);
+
+// --- Animation de révélation des images ---
+gsap.set(".imgrow img", {
+  clipPath: "inset(0% 0% 100% 0%)", // complètement masqué par le haut
+});
+
+gsap.to(".imgrow img", {
+  clipPath: "inset(0% 0% 0% 0%)", // découvre l'image de haut en bas
+  duration: 1.3,
+  ease: "power3.out",
+  stagger: 0.2,
+  delay: 0.5, // petit délai pour plus d'élégance
+});
+
+const main = document.querySelector('main');
+let scrollTarget = 0;
+let isScrolling = false;
+
+// 🔁 Fonction d'animation fluide
+function smoothScroll() {
+  if (!isScrolling) return;
+
+  // Animation douce du scroll vers la position cible
+  main.scrollLeft += (scrollTarget - main.scrollLeft) * 0.12;
+
+  // Continue tant qu'on n'est pas proche de la cible
+  if (Math.abs(scrollTarget - main.scrollLeft) > 0.5) {
+    requestAnimationFrame(smoothScroll);
+  } else {
+    isScrolling = false;
+  }
+}
+
+// ⚙️ Gestion du scroll vertical pour toute la page
+window.addEventListener('wheel', (e) => {
+  e.preventDefault();
+
+  const maxScroll = main.scrollWidth - window.innerWidth;
+  scrollTarget = Math.min(Math.max(scrollTarget + e.deltaY, 0), maxScroll);
+
+  if (!isScrolling) {
+    isScrolling = true;
+    requestAnimationFrame(smoothScroll);
+  }
+}, { passive: false });
+</script>
+</html>

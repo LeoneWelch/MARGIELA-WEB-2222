@@ -1,0 +1,202 @@
+*{margin:0}
+
+@font-face {
+    font-family:'tex' ;
+    src: url(CoolveticaRgCram.otf);
+}
+
+@font-face {
+    font-family:'helv' ;
+    src: url(HelveticaNeue.otf);
+}
+.headerbox{
+    margin-top: -2.7vh;
+    width: 99vw;
+    display: flex;
+    justify-content: space-between;
+    font-family: tex;
+    font-style: normal;
+    font-size: 43.9vw;
+    letter-spacing: -0.8vw;
+    z-index: 99;
+    font-weight: 100;
+    text-transform: uppercase;
+    line-height: 0.69;
+    position: fixed;
+}
+
+.headerleft{
+    height: 100%;
+    color: white;
+}
+
+/* 🔒 Cache la barre de scroll horizontale du conteneur principal */
+main {
+    scrollbar-width: none;     /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer / Edge Legacy */
+  }
+  
+  /* Chrome, Safari, Edge (WebKit) */
+  main::-webkit-scrollbar {
+    display: none;
+  }
+
+
+/* Intro + vidéo */
+.intro {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background: white;
+}
+
+.videobox {
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+}
+
+.videobox video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform-origin: center;
+    background-color: white;
+}
+
+/* Div blanche “rideau” */
+.cover {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    background-color: white;
+    z-index: 10;
+}
+
+
+/* PAGE 1
+PAGE 1
+PAGE 1
+PAGE 1
+PAGE 1
+PAGE 1
+PAGE 1
+PAGE 1 */
+
+
+body, html {
+    height: 100%;
+    overflow: hidden; /* ✅ empêche le scroll vertical natif */
+  }
+  
+  main {
+    height: 100vh;
+    width: 100vw;
+    overflow-x: scroll; /* ✅ on gère le scroll manuellement */
+    overflow-y: hidden;
+    background-color: white;
+    position: relative;
+  }
+  
+  .imgrow {
+    position: absolute;
+    bottom: 7vh;
+    left: 0;
+    display: flex;
+    width: max-content; /* ✅ pour forcer le débordement horizontal */
+    height: 51.1vh;
+    z-index: 99;
+    padding-right: 0.6vw; /* ✅ espace à droite à la fin du scroll */
+
+  }
+  
+  .imgrow img {
+    height: 100%;
+    width: auto;
+    object-fit: cover;
+    flex-shrink: 0;
+    margin-left: 0.5vw;
+  }
+
+
+
+
+.footerbox{
+    height: 7.8vh;
+    margin-left: 0.7vw;
+    display: flex;
+    justify-content: space-between;
+    font-family: "helv";
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1.2vw;
+    letter-spacing: -0.05vw;
+    z-index: 100;
+    position: fixed;
+    bottom: 0;
+    align-items: flex-end;
+    width: 98.6vw;
+    margin-bottom: 1vh;
+    color: white;
+}
+
+.textleft{
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+
+.textright{
+    text-align: right;
+line-height: 1;
+text-transform: uppercase;
+}
+
+
+
+p{
+    color: black;
+}
+
+a {
+    text-decoration: none;
+    color: black;}
+
+
+    a:hover {
+        text-decoration: none;
+        color: grey;}
+
+a :visited {
+    text-decoration: none;
+    color: black;}
+
+
+
+.details{
+    color: grey;
+}
+
+.rideaublancpage2{
+    position: fixed;
+    inset: 0;
+    background:#fff;
+    z-index:9999;
+    will-change: transform;
+  }
+
+
+
+  
+

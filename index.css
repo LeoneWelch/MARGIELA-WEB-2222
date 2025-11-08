@@ -1,0 +1,272 @@
+*{margin:0}
+
+@font-face {
+    font-family:'tex' ;
+    src: url(CoolveticaRgCram.otf);
+}
+
+@font-face {
+    font-family:'helv' ;
+    src: url(HelveticaNeue.otf);
+}
+.headerbox{
+    margin-top: -2.7vh;
+    width: 99vw;
+    display: flex;
+    justify-content: space-between;
+    font-family: tex;
+    font-style: normal;
+    font-size: 43.9vw;
+    letter-spacing: -0.8vw;
+    z-index: 99;
+    font-weight: 100;
+    text-transform: uppercase;
+    line-height: 0.69;
+    position: fixed;
+}
+
+.headerleft{
+    height: 100%;
+    color: white;
+}
+
+/* 🔒 Supprime TOUTES les barres de scroll visibles sur la page */
+html, body, main, .mainpage, .page2 {
+    scrollbar-width: none;     /* Firefox */
+    -ms-overflow-style: none;  /* Internet Explorer et anciens Edge */
+  }
+  
+  /* Chrome, Safari, Edge (WebKit) */
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  main::-webkit-scrollbar,
+  .mainpage::-webkit-scrollbar,
+  .page2::-webkit-scrollbar {
+    display: none;
+  }
+
+
+/* Intro + vidéo */
+.intro {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background: white;
+    will-change: transform; /* 🔥 pour le mouvement fluide */
+  }
+
+.videobox {
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+}
+
+.videobox video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform-origin: center;
+    background-color: white;
+}
+
+/* Div blanche “rideau” */
+.cover {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    background-color: white;
+    z-index: 10;
+}
+
+
+/* PAGE 1
+PAGE 1
+PAGE 1
+PAGE 1
+PAGE 1
+PAGE 1
+PAGE 1
+PAGE 1 */
+
+
+.mainpage {
+    position: relative; /* crée un contexte local pour le positionnement */
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    column-gap: 0.5vw;
+    overflow: hidden;
+  }
+
+
+.videolanding{
+    height: 100vh;
+    width:100vw;}
+
+
+
+.videolanding video{
+    height: 100%;
+    width:100%;
+    object-fit: cover;
+    display: flex;
+
+}
+
+.textglenn {
+    position: fixed;
+    /* top sera fixé en JS en pixels */
+    left: 0.6vw;
+    font-family: "helv";
+    font-weight: 100;
+    font-style: normal;
+    font-size: clamp(14px, 1.2vw, 22px);
+    letter-spacing: -0.05vw;
+    z-index: 1000;
+    text-transform: uppercase;
+    color: white;
+    line-height: 1.1;
+    width: 90%;
+    pointer-events: none;
+  }
+
+.footerbox{
+    height: 7.8vh;
+    margin-left: 0.7vw;
+    display: flex;
+    justify-content: space-between;
+    font-family: "helv";
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1.2vw;
+    letter-spacing: -0.05vw;
+    z-index: 100;
+    position: fixed;
+    bottom: 0;
+    align-items: flex-end;
+    width: 98.6vw;
+    margin-bottom: 1vh;
+    color: white;
+}
+
+.textleft{
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+
+.textright{
+    text-align: right;
+line-height: 1;
+text-transform: uppercase;
+}
+
+.scrollToSection{
+    color: grey;
+}
+
+
+
+/* PAGE 2
+PAGE 2
+PAGE 2
+PAGE 2
+PAGE 2
+PAGE 2
+PAGE 2
+PAGE 2
+PAGE 2
+PAGE 2 */
+
+
+.page2{
+    height: 788vh;
+    width: 100vw;
+    background-color: white;
+    grid-template-columns: repeat(14, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    column-gap: 0.5vw;
+    display: grid;
+    bottom: 0;
+}
+
+
+
+
+
+
+
+.imagerow {
+    display: grid;
+    grid-column-start: 6;
+    grid-column-end: 11;
+    margin-top: 1vh;
+    row-gap: 0.4vh;
+    z-index: 999;
+    margin-top: 77vh;
+}
+
+
+.row1{
+    height: 44vh;
+    width: 50vw;
+    display: flex;
+    justify-content: space-between;
+}
+
+.row1 div{
+    width: 33%;
+}
+
+.row1 img{
+   object-fit: cover;
+   width: 100%;
+   height: 100%;
+}
+
+
+
+
+
+
+
+a {
+    text-decoration: none;
+    color: white;
+  }
+  
+  a:visited {
+    color: white;
+  }
+  
+  a:hover {
+    color: grey;
+  }
+
+
+  
+  .textright a:hover {
+    color: grey !important; /* hover prioritaire */
+  }
+
+.rideaublancpage2{
+    position: fixed;
+    inset: 0;
+    background:#fff;
+    z-index:9999;
+    will-change: transform;
+  }
+  
