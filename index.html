@@ -10,7 +10,7 @@
 
 <body>
     <div class="intro">
-    <div class="videobox">    <video src="Sans titre-4.mp4" muted playsinline></video>
+    <div class="videobox">    <video src="Sans titre-4.mp4" muted playsinline preload></video>
     </div>
     <div class="cover"></div>
 </div>
@@ -137,49 +137,45 @@
     <div class="rideau-blanc"></div>
 
 </body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.39/dist/lenis.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.39/dist/lenis.min.js"></script>
 
 <script>
-window.addEventListener('load', () => {
+document.addEventListener('DOMContentLoaded', () => {
   gsap.registerPlugin(ScrollTrigger);
 
-  // --- Sélecteurs ---
+  // Sélecteurs
   const rideau = document.querySelector('.rideaublancpage2');
   const indexAnchor = document.querySelector('.index a');
   const maisonButton = document.querySelector('.Format a');
+  const intro = document.querySelector('.intro');
   const videoEl = document.querySelector('.videobox video');
   const mainpage = document.querySelector('.mainpage');
-  const intro = document.querySelector('.intro');
 
-  // --- Gestion du rideau principal (entre pages) ---
+  // Rideau inter-pages : déjà caché en CSS ; juste gérer la transition si besoin
   const playReverse = sessionStorage.getItem('playRideauReverse') === 'true';
-
   if (rideau) {
     if (playReverse) {
-      // On arrive depuis une transition : rideau déjà visible
-      gsap.set(rideau, { y: "0%", display: "block" });
+      gsap.set(rideau, { y: "0%" });
       gsap.to(rideau, {
-        y: "100%", // disparaît vers le bas
+        y: "100%",
         duration: 0.7,
         ease: "expo.inOut",
         onComplete: () => sessionStorage.removeItem('playRideauReverse')
       });
     } else {
-      // Arrivée normale : rideau caché
-      gsap.set(rideau, { y: "100%", display: "block" });
+      gsap.set(rideau, { y: "100%" });
     }
   }
 
-  // --- Transition quand on clique sur "Index" ---
   if (indexAnchor && rideau) {
     indexAnchor.addEventListener('click', (e) => {
       e.preventDefault();
       const href = indexAnchor.href;
       sessionStorage.setItem('playRideauReverse', 'true');
       gsap.to(rideau, {
-        y: "0%", // le rideau monte pour couvrir
+        y: "0%",
         duration: 0.7,
         ease: "expo.inOut",
         onComplete: () => window.location.href = href
@@ -187,89 +183,73 @@ window.addEventListener('load', () => {
     });
   }
 
-  // --- Intro vidéo + disparition du rideau vers le haut ---
+  // --- Intro : montre la page même si la vidéo ne joue pas ---
   const hasPlayedIntro = sessionStorage.getItem('introPlayed');
 
-  if (!hasPlayedIntro && videoEl && intro) {
-    try { videoEl.pause(); } catch (e) {}
-
-    // Animation de zoom simple sur la vidéo
-    const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
-    tl.fromTo(videoEl, { scale: 0.6 }, {
-      delay: 0.5,
-      scale: 1,
-      duration: 1.8,
-      ease: "expo.out",
-      onUpdate: () => {
-        if (tl.time() >= 1.3 && videoEl.paused) {
-          try { videoEl.play(); videoEl.playbackRate = 1; } catch (e) {}
-        }
+  function showMain() {
+    if (!intro) return;
+    gsap.to(intro, {
+      y: "-100%",
+      duration: 0.7,
+      ease: "expo.inOut",
+      onComplete: () => {
+        intro.style.display = 'none';
+        if (mainpage) gsap.set(mainpage, { opacity: 1 });
+        sessionStorage.setItem('introPlayed', 'true');
       }
     });
+  }
 
-    // Quand la vidéo se termine → attente de 0.5s → rideau monte (bas → haut)
-    videoEl.addEventListener("ended", () => {
-      gsap.to(intro, {
-        y: "-100%",
-        duration: 0.7,
-        ease: "expo.inOut",
-        delay: 0.5, // ⏱ petit délai avant la montée
-        onComplete: () => {
-          intro.style.display = 'none';
-          gsap.set(mainpage, { opacity: 1 });
-          sessionStorage.setItem('introPlayed', 'true');
-        }
-      });
-    });
+  if (!hasPlayedIntro && intro) {
+    // Essaye de jouer si une source existe
+    if (videoEl && videoEl.getAttribute('src')) {
+      try { videoEl.muted = true; videoEl.play().catch(()=>{}); } catch(e){}
 
-    // Sécurité : si la vidéo est déjà terminée
-    if (videoEl.ended) {
-      gsap.to(intro, {
-        y: "-100%",
-        duration: 0.7,
-        ease: "expo.inOut",
-        delay: 0.5, // même délai ici
-        onComplete: () => {
-          intro.style.display = 'none';
-          gsap.set(mainpage, { opacity: 1 });
-          sessionStorage.setItem('introPlayed', 'true');
-        }
-      });
+      // Si ça joue -> on laissera "ended" fermer l'intro; sinon fallback
+      const fallbackTimer = setTimeout(() => {
+        if (videoEl.readyState < 2 || videoEl.paused) showMain();
+      }, 1500);
+
+      videoEl.addEventListener('playing', () => clearTimeout(fallbackTimer));
+      videoEl.addEventListener('error', showMain);
+      videoEl.addEventListener('ended', showMain);
+    } else {
+      // Pas de source vidéo -> ferme après 800 ms pour l'effet
+      setTimeout(showMain, 800);
     }
-
   } else {
-    // Si l’intro a déjà été jouée
     if (intro) intro.style.display = 'none';
     if (mainpage) gsap.set(mainpage, { opacity: 1 });
   }
 
-  // --- Smooth scroll avec Lenis ---
+  // Animation légère sur la vidéo d'intro si présente
+  if (videoEl) {
+    const tl = gsap.timeline({ defaults: { ease: "power2.inOut" } });
+    tl.fromTo(videoEl, { scale: 0.6 }, { delay: 0.2, scale: 1, duration: 1.2, ease: "expo.out" });
+  }
+
+  // Lenis smooth scroll
   const lenis = new Lenis({
     duration: 0.9,
     easing: (t) => 1 - Math.pow(1 - t, 2),
     smoothWheel: true,
     smoothTouch: false,
   });
-
   lenis.on('scroll', ScrollTrigger.update);
   (function raf(time){ lenis.raf(time); requestAnimationFrame(raf); })();
 
-  // --- Scroll fluide vers section1 (bouton “Maison”) ---
+  // Scroll vers #section1
   if (maisonButton) {
     maisonButton.addEventListener('click', (e) => {
       e.preventDefault();
       const target = document.querySelector('#section1');
       if (target) {
-        lenis.scrollTo(target, {
-          offset: 0,
-          duration: 1.6,
-          easing: gsap.parseEase("expo.inOut")
-        });
+        lenis.scrollTo(target, { offset: 0, duration: 1.2, easing: gsap.parseEase("expo.inOut") });
       }
     });
   }
 
-  // --- Changement de couleur du texte au scroll ---
+  // Changement de couleur du texte quand .page2 entre
   if (document.querySelector('.page2')) {
     ScrollTrigger.create({
       trigger: ".page2",
@@ -281,79 +261,42 @@ window.addEventListener('load', () => {
 
   function switchTextColor(color) {
     gsap.to(
-      [
-        ".headerleft p",
-        ".footerbox",
-        ".textglenn",
-        ".textright a",
-        ".textright p",
-        ".textleft p"
-      ],
-      { color: color, duration: 0.7, ease: "power3.inOut" }
+      [".headerleft p",".footerbox",".textglenn",".textright a",".textright p",".textleft p"],
+      { color, duration: 0.7, ease: "power3.inOut" }
     );
   }
 
-});
+  // Repositionnement texte si resize
+  window.addEventListener("resize", () => {
+    const glenn = document.querySelector(".textglenn");
+    if (glenn) {
+      glenn.style.transform = "translateY(0)";
+      setTimeout(() => { glenn.style.transform = "translateY(0)"; }, 200);
+    }
+  });
 
-
-
-// 🔧 Corrige la position après la sortie du plein écran
-window.addEventListener("resize", () => {
-  const glenn = document.querySelector(".textglenn");
-  if (glenn) {
-    // Force un léger repositionnement pour recalculer le flux
-    glenn.style.transform = "translateY(0)";
-    setTimeout(() => {
-      glenn.style.transform = "translateY(0)"; // réapplique sa position
-    }, 200);
-  }
-});
-
-
-(function () {
+  // Verrouillage de la position du bloc texte
+  (function () {
     const glenn = document.querySelector('.textglenn');
     if (!glenn) return;
-
-    // 🔧 Choisis la position verticale "visuelle" que tu veux (en % de la hauteur initiale)
-    // 0.62 = environ 62% de la hauteur de l’écran (plus grand => plus bas)
     const RATIO_FROM_TOP = 0.545;
-
-    // On mémorise la hauteur de fenêtre au premier rendu
     const initialVH = window.innerHeight;
-
     function lockPositionOnce() {
       const topPx = Math.round(initialVH * RATIO_FROM_TOP);
       glenn.style.top = topPx + 'px';
       glenn.style.bottom = 'auto';
     }
-
-    // Position verrouillée dès le départ
     lockPositionOnce();
-
-    // Quand on sort du plein écran, on réapplique EXACTEMENT la même position pixel
-    function reapplyAfterFullscreen() {
-      // petit délai pour laisser le viewport se stabiliser
-      setTimeout(lockPositionOnce, 200);
-    }
-
-    document.addEventListener('fullscreenchange', () => {
-      if (!document.fullscreenElement) reapplyAfterFullscreen();
-    });
-    document.addEventListener('webkitfullscreenchange', () => {
-      if (!document.webkitFullscreenElement) reapplyAfterFullscreen();
-    });
-    document.addEventListener('mozfullscreenchange', () => {
-      if (!document.mozFullScreenElement) reapplyAfterFullscreen();
-    });
-    document.addEventListener('MSFullscreenChange', () => {
-      if (!document.msFullscreenElement) reapplyAfterFullscreen();
-    });
+    function reapplyAfterFullscreen(){ setTimeout(lockPositionOnce, 200); }
+    document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) reapplyAfterFullscreen(); });
+    document.addEventListener('webkitfullscreenchange', () => { if (!document.webkitFullscreenElement) reapplyAfterFullscreen(); });
+    document.addEventListener('mozfullscreenchange', () => { if (!document.mozFullScreenElement) reapplyAfterFullscreen(); });
+    document.addEventListener('MSFullscreenChange', () => { if (!document.msFullscreenElement) reapplyAfterFullscreen(); });
   })();
 
-
-
-  
+});
 </script>
+
 
 
 
