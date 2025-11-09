@@ -295,62 +295,52 @@ window.addEventListener('load', () => {
 
 });
 
-
-
-// 🔧 Corrige la position après la sortie du plein écran
-window.addEventListener("resize", () => {
-  const glenn = document.querySelector(".textglenn");
-  if (glenn) {
-    // Force un léger repositionnement pour recalculer le flux
-    glenn.style.transform = "translateY(0)";
-    setTimeout(() => {
-      glenn.style.transform = "translateY(0)"; // réapplique sa position
-    }, 200);
-  }
-});
-
-
+// --- Positionne .textglenn 1vh sous le bas du titre, tout le temps ---
 (function () {
-    const glenn = document.querySelector('.textglenn');
-    if (!glenn) return;
+  const glenn = document.querySelector('.textglenn');
+  const title = document.querySelector('.headerleft p');
+  if (!glenn || !title) return;
 
-    // 🔧 Choisis la position verticale "visuelle" que tu veux (en % de la hauteur initiale)
-    // 0.62 = environ 62% de la hauteur de l’écran (plus grand => plus bas)
-    const RATIO_FROM_TOP = 0.545;
+  const OFFSET_VH = 3; // 1vh en dessous du titre
 
-    // On mémorise la hauteur de fenêtre au premier rendu
-    const initialVH = window.innerHeight;
+  function pxFromVh(vh) { return window.innerHeight * (vh / 100); }
 
-    function lockPositionOnce() {
-      const topPx = Math.round(initialVH * RATIO_FROM_TOP);
-      glenn.style.top = topPx + 'px';
-      glenn.style.bottom = 'auto';
-    }
+  function place() {
+    const rect = title.getBoundingClientRect();  // titre = position FIXED => rect relatif au viewport
+    const y = rect.bottom + pxFromVh(OFFSET_VH); // bas du titre + 1vh
+    glenn.style.position = 'fixed';
+    glenn.style.top = Math.round(y) + 'px';
+    glenn.style.bottom = 'auto';
+    glenn.style.zIndex = '1000'; // au-dessus du titre si besoin
+  }
 
-    // Position verrouillée dès le départ
-    lockPositionOnce();
+  // 1) Appel immédiat
+  place();
 
-    // Quand on sort du plein écran, on réapplique EXACTEMENT la même position pixel
-    function reapplyAfterFullscreen() {
-      // petit délai pour laisser le viewport se stabiliser
-      setTimeout(lockPositionOnce, 200);
-    }
+  // 2) Quand les polices sont prêtes (la taille du titre peut changer)
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(place).catch(()=>{});
+  }
 
-    document.addEventListener('fullscreenchange', () => {
-      if (!document.fullscreenElement) reapplyAfterFullscreen();
-    });
-    document.addEventListener('webkitfullscreenchange', () => {
-      if (!document.webkitFullscreenElement) reapplyAfterFullscreen();
-    });
-    document.addEventListener('mozfullscreenchange', () => {
-      if (!document.mozFullScreenElement) reapplyAfterFullscreen();
-    });
-    document.addEventListener('MSFullscreenChange', () => {
-      if (!document.msFullscreenElement) reapplyAfterFullscreen();
-    });
-  })();
+  // 3) Resize / orientation / fullscreen
+  window.addEventListener('resize', place);
+  window.addEventListener('orientationchange', place);
+  ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','MSFullscreenChange']
+    .forEach(evt => document.addEventListener(evt, place));
 
+  // 4) Si le titre change de dimensions (wrap, etc.)
+  if ('ResizeObserver' in window) {
+    const ro = new ResizeObserver(place);
+    ro.observe(title);
+  }
 
+  // 5) Si tu as un rideau/intro qui disparaît, recalcule après son changement
+  const intro = document.querySelector('.intro');
+  if (intro && 'MutationObserver' in window) {
+    const mo = new MutationObserver(place);
+    mo.observe(intro, { attributes: true, attributeFilter: ['style','class'] });
+  }
+})();
 
   
 </script>
